@@ -1,12 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'Provider/app_color.dart';
+import 'Provider/calculator.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final calc = Provider.of<Calc>(context);
     final screen = MediaQuery.of(context).size;
     final buttonWidth = (MediaQuery.of(context).size.width - 16 * 5) * (1 / 4);
     return SafeArea(
@@ -25,14 +28,18 @@ class HomePage extends StatelessWidget {
                       24 -
                       MediaQuery.of(context).padding.top,
                   alignment: Alignment.bottomRight,
-                  color: Colors.amber,
+                  // color: Colors.amber,
                   child: SingleChildScrollView(
                     reverse: true,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text("tes", style: TextStyle(fontSize: 32)),
-                        Text("Hasil", style: TextStyle(fontSize: 40)),
+                        Text((calc.getmath == '') ? "0" : calc.getmath,
+                            style: TextStyle(
+                                fontSize: 40, color: Colorss.textColor)),
+                        Text(calc.getResult,
+                            style:
+                                TextStyle(fontSize: 56, color: Colors.black54)),
                       ],
                     ),
                   )),
@@ -56,56 +63,76 @@ class HomePage extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                // color: Colors.blue,
                 width: buttonWidth * 3 + 16 * 3,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-                        Button(),
+                        Button(
+                          child: 'C',
+                          color: Colorss.amberColor,
+                        ),
                         Spacer(),
-                        Button(),
+                        Button(
+                          child: "%",
+                          color: Colorss.blueColor,
+                        ),
                         Spacer(),
-                        Button(),
-                        Spacer(),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Button(),
-                        Spacer(),
-                        Button(),
-                        Spacer(),
-                        Button(),
-                        Spacer(),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Button(),
-                        Spacer(),
-                        Button(),
-                        Spacer(),
-                        Button(),
+                        Button(
+                          child: "x",
+                          color: Colorss.blueColor,
+                        ),
                         Spacer(),
                       ],
                     ),
                     Row(
                       children: [
-                        Button(),
+                        Button(child: "7"),
                         Spacer(),
-                        Button(),
+                        Button(
+                          child: "8",
+                        ),
                         Spacer(),
-                        Button(),
+                        Button(
+                          child: "9",
+                        ),
                         Spacer(),
                       ],
                     ),
                     Row(
                       children: [
-                        Expanded(flex: 2, child: Button()),
+                        Button(child: "4"),
+                        Spacer(),
+                        Button(child: "5"),
+                        Spacer(),
+                        Button(child: "6"),
+                        Spacer(),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Button(
+                          child: "3",
+                        ),
+                        Spacer(),
+                        Button(child: "2"),
+                        Spacer(),
+                        Button(
+                          child: "1",
+                        ),
+                        Spacer(),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                            flex: 2,
+                            child: Button(
+                              child: "0",
+                            )),
                         SizedBox(width: 16),
-                        Button(),
+                        Button(child: "."),
                         SizedBox(width: 16),
                       ],
                     ),
@@ -113,14 +140,18 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               Container(
-                // color: Colors.red,
                 width: buttonWidth,
                 child: Column(
                   children: [
-                    Button(),
+                    Button(
+                      child: "-",
+                      color: Colorss.blueColor,
+                    ),
                     SizedBox(height: 16),
                     Expanded(
                         child: Button(
+                      child: "+",
+                      color: Colorss.blueColor,
                       isOuterShadow: false,
                     )),
                     SizedBox(height: 16),
@@ -142,13 +173,14 @@ class HomePage extends StatelessWidget {
 }
 
 class Button extends StatelessWidget {
-  Color? color = Colorss.textColor;
+  Color? color;
   final String child;
-  final bool isOuterShadow;
+  bool isOuterShadow;
   Button({this.child = ' ', this.isOuterShadow = true, this.color});
 
   @override
   Widget build(BuildContext context) {
+    final calc = Provider.of<Calc>(context);
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(50),
@@ -175,6 +207,8 @@ class Button extends StatelessWidget {
                     Colors.black.withOpacity(0.05),
                     Colors.black.withOpacity(0.01),
                     Colors.black.withOpacity(0),
+                    Colors.black.withOpacity(0),
+                    Colors.white.withOpacity(0),
                     Colors.white.withOpacity(0),
                     Colors.white.withOpacity(0.1),
                     Colors.white.withOpacity(0.3),
@@ -183,10 +217,30 @@ class Button extends StatelessWidget {
                   ],
                   transform: GradientRotation(-0.5))
               : null),
-      alignment: Alignment.center,
-      width: (MediaQuery.of(context).size.width - 16 * 5) * (1 / 4),
-      height: (MediaQuery.of(context).size.width - 16 * 5) * (1 / 4),
-      child: Text(child, style: TextStyle(color: color, fontSize: 40)),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(50),
+          onTap: () {
+            if (this.child == "C") {
+              calc.restart();
+            } else if (this.child == "=") {
+              calc.calculate();
+            } else {
+              calc.setMath(child);
+            }
+          },
+          child: Container(
+            alignment: Alignment.center,
+            width: (MediaQuery.of(context).size.width - 16 * 5) * (1 / 4),
+            height: (MediaQuery.of(context).size.width - 16 * 5) * (1 / 4),
+            child: Text(child,
+                style: TextStyle(
+                    color: (color == null) ? Colorss.textColor : color,
+                    fontSize: 40)),
+          ),
+        ),
+      ),
     );
   }
 }
