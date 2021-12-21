@@ -1,6 +1,6 @@
 # calculator_app
 
-A new Flutter project.
+A calculator app made using flutter with Neumophism design
 
 ## Getting Started
 
