@@ -9,12 +9,31 @@ import 'Provider/calculator.dart';
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final colorss = Provider.of<Colorss>(context);
     final calc = Provider.of<Calc>(context);
     final screen = MediaQuery.of(context).size;
     final buttonWidth = (MediaQuery.of(context).size.width - 16 * 5) * (1 / 4);
+
+    AppBar appBar = AppBar(
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      title: Center(
+        child: Switch(
+          activeColor: Color(0xFFFFA048),
+          value: colorss.isDarkMode,
+          onChanged: (value) {
+            colorss.setDarkMode();
+            // print('berubah');
+            // print(colorss.primaryColor.toString());
+          },
+        ),
+      ),
+    );
+
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colorss.primaryColor,
+        appBar: appBar,
+        backgroundColor: colorss.primaryColor,
         body: Padding(
           padding: EdgeInsets.all(16),
           child: Column(
@@ -26,7 +45,8 @@ class HomePage extends StatelessWidget {
                       16 * 6 -
                       buttonWidth * 5 -
                       24 -
-                      MediaQuery.of(context).padding.top,
+                      MediaQuery.of(context).padding.top -
+                      appBar.preferredSize.height,
                   alignment: Alignment.bottomRight,
                   // color: Colors.amber,
                   child: SingleChildScrollView(
@@ -36,10 +56,10 @@ class HomePage extends StatelessWidget {
                       children: [
                         Text((calc.getmath == '') ? "0" : calc.getmath,
                             style: TextStyle(
-                                fontSize: 40, color: Colorss.textColor)),
+                                fontSize: 40, color: colorss.textColor)),
                         Text(calc.getResult,
-                            style:
-                                TextStyle(fontSize: 56, color: Colors.black54)),
+                            style: TextStyle(
+                                fontSize: 56, color: colorss.textColor)),
                       ],
                     ),
                   )),
@@ -57,6 +77,7 @@ class HomePage extends StatelessWidget {
   Widget Keyboard() {
     return LayoutBuilder(
       builder: (context, constraints) {
+        final colorss = Provider.of<Colorss>(context);
         final buttonWidth = (constraints.maxWidth - 16 * 3) / 4;
         return Container(
           height: buttonWidth * 5 + 16 * 4,
@@ -71,17 +92,17 @@ class HomePage extends StatelessWidget {
                       children: [
                         Button(
                           child: 'C',
-                          color: Colorss.amberColor,
+                          color: colorss.amberColor,
                         ),
                         Spacer(),
                         Button(
                           child: "%",
-                          color: Colorss.blueColor,
+                          color: colorss.blueColor,
                         ),
                         Spacer(),
                         Button(
                           child: "x",
-                          color: Colorss.blueColor,
+                          color: colorss.blueColor,
                         ),
                         Spacer(),
                       ],
@@ -145,20 +166,20 @@ class HomePage extends StatelessWidget {
                   children: [
                     Button(
                       child: "-",
-                      color: Colorss.blueColor,
+                      color: colorss.blueColor,
                     ),
                     SizedBox(height: 16),
                     Expanded(
                         child: Button(
                       child: "+",
-                      color: Colorss.blueColor,
+                      color: colorss.blueColor,
                       isOuterShadow: false,
                     )),
                     SizedBox(height: 16),
                     Expanded(
                         child: Button(
                       child: "=",
-                      color: Colorss.amberColor,
+                      color: colorss.amberColor,
                       isOuterShadow: false,
                     )),
                   ],
@@ -173,6 +194,8 @@ class HomePage extends StatelessWidget {
 }
 
 class Button extends StatelessWidget {
+  // Colorss colorss = new Colorss();
+
   Color? color;
   final String child;
   bool isOuterShadow;
@@ -180,22 +203,23 @@ class Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorss = Provider.of<Colorss>(context);
     final calc = Provider.of<Calc>(context);
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(50),
-          color: Colorss.primaryColor,
+          color: colorss.primaryColor,
           boxShadow: (isOuterShadow)
               ? [
                   BoxShadow(
                     blurRadius: 12,
                     offset: Offset(5, 5),
-                    color: Color(0xff000000).withOpacity(0.1),
+                    color: colorss.blackColor.withOpacity(0.07),
                   ),
                   BoxShadow(
                       blurRadius: 12,
                       offset: Offset(-5, -5),
-                      color: Color(0xffffffff).withOpacity(0.66))
+                      color: colorss.whiteColor.withOpacity(0.3))
                 ]
               : [],
           gradient: (!isOuterShadow)
@@ -203,17 +227,17 @@ class Button extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Colors.black.withOpacity(0.7),
-                    Colors.black.withOpacity(0.05),
-                    Colors.black.withOpacity(0.01),
-                    Colors.black.withOpacity(0),
-                    Colors.black.withOpacity(0),
-                    Colors.white.withOpacity(0),
-                    Colors.white.withOpacity(0),
-                    Colors.white.withOpacity(0.1),
-                    Colors.white.withOpacity(0.3),
-                    Colors.white.withOpacity(0.7),
-                    Colors.white.withOpacity(1),
+                    colorss.blackColor.withOpacity(0.7),
+                    colorss.blackColor.withOpacity(0.05),
+                    colorss.blackColor.withOpacity(0.01),
+                    colorss.blackColor.withOpacity(0),
+                    colorss.blackColor.withOpacity(0),
+                    colorss.whiteColor.withOpacity(0),
+                    colorss.whiteColor.withOpacity(0),
+                    colorss.whiteColor.withOpacity(0.1),
+                    colorss.whiteColor.withOpacity(0.3),
+                    colorss.whiteColor.withOpacity(0.7),
+                    colorss.whiteColor.withOpacity(1),
                   ],
                   transform: GradientRotation(-0.5))
               : null),
@@ -236,7 +260,7 @@ class Button extends StatelessWidget {
             height: (MediaQuery.of(context).size.width - 16 * 5) * (1 / 4),
             child: Text(child,
                 style: TextStyle(
-                    color: (color == null) ? Colorss.textColor : color,
+                    color: (color == null) ? colorss.textColor : color,
                     fontSize: 40)),
           ),
         ),
